@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <center>
+        <br><br>
+
+        <h1 id="error-message"></h1>
+        
+        {% for meal in meals %}
+            {% if meal.start_time <= current_time and current_time <= meal.end_time %}
+                <h1>Current Meal: {{ meal.name }}</h1>
+            {% endif %}
+        {% endfor %}
+
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" id="user" name="user" value="">
+            <input type="hidden" id="meal" name="meal" value="{{meal.name}}">
+            <input type="hidden" id="latitude" name="latitude" value="">
+            <input type="hidden" id="longitude" name="longitude" value="">
+            <br><br><br>
+            {% for meal in meals %}
+                {% if meal.start_time <= current_time and current_time <= meal.end_time %}
+                    <input type="submit" class="btn btn-outline-primary" value="Check In">
+                {% endif %}
+            {% endfor %}
+        </form>
+
+    </center>
+
+
+    <script>
+        let name;
+        let current_meal;
+        let mealActive = false;
+
+        function getUserLatitude() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const latitude = position.coords.latitude.toFixed(3);
+                    document.getElementById("latitude").value = latitude;
+                });
+            } else {
+                console.log("Geolocation is not supported by this browser.");
+                return null;
+            }
+        }
+
+        function getUserLongitude() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const longitude = position.coords.longitude.toFixed(3);
+                    document.getElementById("longitude").value = longitude;
+                });
+            } else {
+                console.log("Geolocation is not supported by this browser.");
+                return null;
+            }
+        }
+
+        const latitude = getUserLatitude();
+
+        const longitude = getUserLongitude();
+
+        name = localStorage.getItem("name");
+
+        document.getElementById("user").value = name;
+
+        {% for meal in meals %}
+            {% if meal.start_time <= current_time and current_time <= meal.end_time %}
+                current_meal = "{{meal.name}}"
+                mealActive = true;
+            {% endif %}
+        {% endfor %}
+
+        if (mealActive == false) {
+            document.getElementById("error-message").innerHTML = "Oops! There are no meals right now...";
+        }
+
+        document.getElementById("meal").value = current_meal;
+    </script>
+
+{% endblock content %}
+
+
+
+

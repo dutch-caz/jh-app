@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block content %}
+<center>
+    
+    <div id="notAssigned" style="display:none">
+
+        <select class="custom-select mb-4" name="person" id="mySelect">
+            <option selected>Select a person:</option>
+            {% for attendee in attendees %}
+                <option>{{attendee.name}}</option>
+            {% endfor %}
+        </select>
+
+        <br><br><br>
+
+        <button class="btn btn-outline-primary" onclick="storeSelectedOption()">
+            Submit
+        </button>
+
+    </div>
+
+    
+    <div id="assigned" style="display:none">
+        <br><br><br><br>
+        <h2 id="welcome-message"></h2>
+        <br>
+        <a href={% url "check_in" %}>
+            <button class="btn btn-outline-primary">Check In</button>
+        </a>
+        <br><br>
+        <p>or...</p>
+        <a href={% url "signup" %}>
+            <button class="btn btn-outline-primary">Sign Up for Meals!</button>
+        </a>
+    </div>
+
+    
+</center>
+
+<script>
+    //vars
+    let userAssigned;
+    let name;
+
+    //logic for seeing local storage key value "name" and updating userAssigned var.
+    if(localStorage.getItem("name") !== null) {
+        userAssigned = true;
+        name = localStorage.getItem("name");
+    } else {
+        userAssigned = false;
+    }
+    
+    function updateLogic() {
+        if(userAssigned == false) {
+            document.getElementById("notAssigned").style.display = "block";
+            document.getElementById("assigned").style.display = "none";
+        } else {
+            document.getElementById("assigned").style.display = "block";
+            document.getElementById("notAssigned").style.display = "none";
+            const splitNames = name.split(" ")
+            document.getElementById("welcome-message").innerHTML = "Hey, " + splitNames[0] +"! You are signed in!";
+        }
+    }
+
+    function storeSelectedOption() {
+        const selectedOption = document.querySelector('#mySelect option:checked').text;
+        localStorage.setItem('name', selectedOption);
+        userAssigned = true;
+        name = selectedOption;
+        updateLogic();
+    }
+
+    onload(updateLogic())
+
+</script>
+
+{% endblock content %}

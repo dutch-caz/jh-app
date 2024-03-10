@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+
+
+{% block content %}
+    <center>
+        <br>
+        {% if enable.signUpEnabled %}
+            <h1>It's time for meal sign up!</h1>
+            <br>
+            <form class="form-check form-switch" method="POST">
+                {% csrf_token %}
+                <input type="hidden" id="attendee_name" name="attendee_name" value="">
+                {% for meal in meals %}
+                    <input type="checkbox" name="meals" id="{{ meal.name }}" value="{{ meal.name }}">  {{ meal.name }}
+                    <code>{{ meal.description }}</code>  <br><hr><br>
+                {% endfor %}
+                <button class="btn btn-outline-primary" type="submit">Submit</button>
+            </form>
+
+        {% else %}
+            <h1>Sorry! Sign ups are closed right now!</h1><br><br>
+            <h2>Try again later!<h2>  
+        {% endif %}
+    </center>
+
+    <script>
+        let name;
+
+        name = localStorage.getItem("name");
+
+        document.getElementById("attendee_name").value = name;
+
+    </script>
+
+{% endblock content %}
+
+
+
